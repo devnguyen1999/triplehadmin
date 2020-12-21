@@ -20,16 +20,23 @@ function Login() {
   const onSubmit = (values) => {
     setError(null);
     setLoading(true);
-    axios
-      .post("https://h3-blog.herokuapp.com/user/login", {
+    axios({
+      method: "post",
+      url: "https://h3-blog.herokuapp.com/user/login",
+      data: {
         email: values.email,
-        password: values.password,
-      })
+        password: values.password
+      }
+    })
       .then((response) => {
         if (response.data.role === "admin") {
           console.log(response.data);
           setLoading(false);
-          setUserSession(response.data.token, response.data.refreshToken, values.email);
+          setUserSession(
+            response.data.token,
+            response.data.refreshToken,
+            values.email
+          );
           setRedirect(true);
         } else {
           setError("Chỉ quản trị viên mới có quyền đăng nhập trang này.");
@@ -37,7 +44,7 @@ function Login() {
       })
       .catch((error) => {
         setLoading(false);
-        if (error.response.status === 401) {
+        if (error.response.status === 401 || error.response.status === 403) {
           setError(error.response.data.message);
         } else {
           setError("Có lỗi xảy ra. Vui lòng thử lại.");
@@ -68,22 +75,6 @@ function Login() {
                     onSubmit={handleSubmit(onSubmit)}
                     className="form-validate mb-4"
                   >
-                    {/* <div className="form-group">
-                      <input
-                        className="form-control"
-                        type="email"
-                        placeholder="Email"
-                        id="email"
-                        name="email"
-                        ref={register({
-                          required: true,
-                          pattern: /^\S+@\S+$/i,
-                        })}
-                      />
-                      {errors.email &&
-                        errors.email.type === "required" &&
-                        errorMessage(required)}
-                    </div> */}
                     <div className="form-group">
                       <label htmlFor="email" className="label-material">
                         Email

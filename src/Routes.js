@@ -1,5 +1,6 @@
 import React from "react";
 import { Switch, Route, Link, useRouteMatch } from "react-router-dom";
+import { PrivateRoute } from './PrivateRoute';
 import Home from "./pages/Home";
 // import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
@@ -7,18 +8,19 @@ import CreatePost from "./pages/CreatePost";
 function Routes() {
   return (
       <Switch>
-        <Route exact path="/">
+        {/* <PrivateRoute exact path="/">
           <Home />
-        </Route>
-        <Route path="/loi-404">
+        </PrivateRoute> */}
+        <PrivateRoute exact path="/" component={Home} />
+        <PrivateRoute path="/loi-404">
           <Home />
-        </Route>
+        </PrivateRoute>
         <Route path="/dang-nhap">
           <Login />
         </Route>
-        <Route path="/tao-bai-viet">
+        <PrivateRoute path="/tao-bai-viet">
           <CreatePost />
-        </Route>
+        </PrivateRoute>
       </Switch>
   );
 }

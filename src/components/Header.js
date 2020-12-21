@@ -3,6 +3,7 @@ import axios from "axios";
 import { Redirect } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { getToken, removeUserSession } from "../HandleUser";
+import Axios from "axios";
 
 function Header() {
   const { from } = { from: { pathname: "/dang-nhap" } };
@@ -12,15 +13,19 @@ function Header() {
     return <Redirect to={from} />;
   }
 
-  const logout = () => {
-    axios
-      .post("https://h3-blog.herokuapp.com/user/logout", {
+  const logout = (event) => {
+    event.preventDefault();
+    axios({
+      method: "post",
+      url: "https://h3-blog.herokuapp.com/user/logout",
+      data: {
         token: getToken()
-      })
+      }
+    })
       .then((response) => {
-          console.log(response.data);
-          removeUserSession();
-          setRedirect(true);
+        console.log(response.data);
+        removeUserSession();
+        setRedirect(true);
       })
       .catch((error) => {
         console.log(error.response);
@@ -102,7 +107,6 @@ function Header() {
                       <div className="status online" />
                     </div>
                     <div className="content">
-                      
                       <strong className="d-block">Nadia Halsey</strong>
                       <span className="d-block">
                         lorem ipsum dolor sit amit
@@ -123,7 +127,6 @@ function Header() {
                       <div className="status away" />
                     </div>
                     <div className="content">
-                      
                       <strong className="d-block">Peter Ramsy</strong>
                       <span className="d-block">
                         lorem ipsum dolor sit amit
@@ -144,7 +147,6 @@ function Header() {
                       <div className="status busy" />
                     </div>
                     <div className="content">
-                      
                       <strong className="d-block">Sam Kaheil</strong>
                       <span className="d-block">
                         lorem ipsum dolor sit amit
@@ -165,7 +167,6 @@ function Header() {
                       <div className="status offline" />
                     </div>
                     <div className="content">
-                      
                       <strong className="d-block">Sara Wood</strong>
                       <span className="d-block">
                         lorem ipsum dolor sit amit
@@ -174,7 +175,6 @@ function Header() {
                     </div>
                   </a>
                   <a href="#" className="dropdown-item text-center message">
-                    
                     <strong>
                       See All Messages <i className="fa fa-angle-right" />
                     </strong>
@@ -279,7 +279,6 @@ function Header() {
                     </div>
                   </a>
                   <a href="#" className="dropdown-item text-center">
-                    
                     <strong>
                       See All Tasks <i className="fa fa-angle-right" />
                     </strong>
@@ -287,10 +286,18 @@ function Header() {
                 </div>
               </div>
               {/* Tasks End Here*/}
-              
+
               {/* Logout Start Here */}
               <div className="list-inline-item logout">
-                <a id="logout" type="button" href="javascript:void(0);" className="nav-link" onClick={logout()}>
+                <a
+                  id="logout"
+                  type="button"
+                  className="nav-link"
+                  href="#!"
+                  onClick={(event) => {
+                    logout(event);
+                  }}
+                >
                   Đăng xuất <i className="icon-logout" />
                 </a>
               </div>
