@@ -37,7 +37,7 @@ function CreatePost() {
       method: "post",
       url: "https://h3-blog.herokuapp.com/post/create",
       data: formData,
-      headers: { "Content-Type": "multipart/form-data" }
+      headers: { "Content-Type": "multipart/form-data" },
     })
       .then((response) => {
         console.log(response.data);
@@ -203,9 +203,13 @@ function CreatePost() {
                             >
                               Tạo bài viết
                             </button>
-                            {/* <button type="button" className="btn btn-secondary">
+                            <Link
+                              type="submit"
+                              className="btn btn btn-secondary"
+                              to="/bai-viet"
+                            >
                               Huỷ bỏ
-                            </button> */}
+                            </Link>
                           </div>
                         </div>
                       </form>

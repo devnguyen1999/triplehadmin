@@ -22,10 +22,9 @@ function Sidebar() {
       {/* Sidebar Navidation Menus*/}
       <span className="heading">Menu</span>
       <ul className="list-unstyled">
-        <CustomLink key={1} activeOnlyWhenExact={true} to="/" label={[<i className="icon-home" />, "Trang chủ"]}/>
-          {/* <i className="icon-home" /> */}
-        <CustomLink key={2} to="/tao-bai-viet" label={[<i className="icon-padnote" />, "Bài viết"]}/>
-          {/* <i className="icon-padnote" /> */}
+        <CustomLink activeOnlyWhenExact={true} to="/" label={[<i className="icon-home" />, "Trang chủ"]}/>
+        <CustomLink to="/the-loai" label={[<i className="icon-grid"/>, "Thể loại"]}/>
+        <CustomLink to="/bai-viet" label={[<i className="icon-padnote" />, "Bài viết"]}/>
       </ul>
     </nav>
   );

@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Redirect } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import { getToken, removeUserSession } from "../HandleUser";
-import Axios from "axios";
 
 function Header() {
   const { from } = { from: { pathname: "/dang-nhap" } };
@@ -57,7 +55,7 @@ function Header() {
           <div className="container-fluid d-flex align-items-center justify-content-between">
             <div className="navbar-header">
               {/* Navbar Header Start Here */}
-              <Link to="/admin" className="navbar-brand">
+              <Link to="/" className="navbar-brand">
                 <div className="brand-text brand-big visible text-uppercase">
                   <strong className="text-primary">Dark</strong>
                   <strong>Admin</strong>
