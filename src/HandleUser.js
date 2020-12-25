@@ -1,8 +1,8 @@
-import axios from "axios";
+import axios from 'axios';
 
 // return the user data from the session storage
 export const getUser = () => {
-  const user = sessionStorage.getItem("user");
+  const user = sessionStorage.getItem('user');
   if (user) {
     return JSON.parse(user);
   } else {
@@ -12,33 +12,38 @@ export const getUser = () => {
 
 // return the token from the session storage
 export const getToken = () => {
-  return sessionStorage.getItem("token") || null;
+  return sessionStorage.getItem('token') || null;
+};
+
+export const getName = () => {
+  return sessionStorage.getItem('name') || null;
 };
 
 // return new token
 export const refreshToken = () => {
   axios
-      .post("https://h3-blog.herokuapp.com/user/refreshToken", {
-        refreshToken: sessionStorage.getItem("refreshToken"),
-      })
-      .then((response) => {
-        sessionStorage.setItem("token", response.data.token);
-      })
-      .catch((error) => {
-        console.log(error.response);
-      });
+    .post('https://h3-blog.herokuapp.com/user/refreshToken', {
+      refreshToken: sessionStorage.getItem('refreshToken'),
+    })
+    .then((response) => {
+      sessionStorage.setItem('token', response.data.token);
+    })
+    .catch((error) => {
+      console.log(error.response);
+    });
 };
 
 // remove the token and user from the session storage
 export const removeUserSession = () => {
-  sessionStorage.removeItem("token");
-  sessionStorage.removeItem("refreshToken");
-  sessionStorage.removeItem("user");
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('refreshToken');
+  sessionStorage.removeItem('user');
 };
 
 // set the token and user from the session storage
-export const setUserSession = (token, refreshToken, user) => {
-  sessionStorage.setItem("token", token);
-  sessionStorage.setItem("refreshToken", refreshToken);
-  sessionStorage.setItem("user", JSON.stringify(user));
+export const setUserSession = (token, refreshToken, user, name) => {
+  sessionStorage.setItem('token', token);
+  sessionStorage.setItem('refreshToken', refreshToken);
+  sessionStorage.setItem('user', JSON.stringify(user));
+  sessionStorage.setItem('name', name || '');
 };

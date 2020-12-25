@@ -27,7 +27,6 @@ function EditPost() {
   let { slug } = useParams();
   let one = ApiBaseURL('category/load');
   let two = ApiBaseURL('post/load/' + slug);
-  console.log('two: ', two);
   useEffect(() => {
     const requestOne = axios.get(one);
     const requestTwo = axios.get(two);
