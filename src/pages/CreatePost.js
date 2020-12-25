@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { ApiBaseURL } from "../ApiBaseURL";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
@@ -8,36 +9,92 @@ import { Editor } from "@tinymce/tinymce-react";
 import { getToken } from "../HandleUser";
 import { Redirect } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { useDropzone } from "react-dropzone";
 
 function CreatePost() {
   const { handleSubmit, register, errors } = useForm();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [content, setContent] = useState(null);
   var formData = new FormData();
-  const { from } = { from: { pathname: "/" } };
+  const { from } = { from: { pathname: "/bai-viet" } };
   const [redirect, setRedirect] = useState(false);
+  const [categories, setCategories] = useState([]);
   const errorMessage = (error) => {
     return <small className="error">{error}</small>;
   };
 
-  if (redirect) {
-    return <Redirect to={from} />;
-  }
+  const [files, setFiles] = useState([]);
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: "image/*",
+    maxFiles: 1,
+    onDrop: (acceptedFiles) => {
+      setFiles(
+        acceptedFiles.map((file) =>
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          })
+        )
+      );
+    },
+  });
+  const thumbs = files.map((file) => {
+    console.log(file);
+    return (
+      <div key={file.name}>
+        <img className="img-fluid mt-3" src={file.preview} />
+      </div>
+    );
+  });
+  useEffect(() => {
+    files.forEach((file) => URL.revokeObjectURL(file.preview));
+  }, [files]);
+
+  const height = 500;
+  const menubar = false;
+  const plugins =
+    "link image code table textcolor colorpicker fullscreen hr lists";
+  const toolbar =
+    "fontselect fontsizeselect formatselect | " +
+    "bold italic underline strikethrough subscript superscript | " +
+    "blockquote removeformat | forecolor backcolor | " +
+    "alignleft aligncenter alignright alignjustify | " +
+    "indent outdent | numlist bullist | " +
+    "link unlink | hr table image | fullscreen code | undo redo";
+  const handleEditorChange = (event) => {
+    setContent(event.target.getContent());
+  };
+  const getCategories = () => {
+    axios({
+      method: "get",
+      url: ApiBaseURL("category/load"),
+    })
+      .then((response) => {
+        console.log(response.data.data);
+        setCategories(response.data.data);
+      })
+      .catch((error) => {
+        console.log(error.response);
+      });
+  };
+  useEffect(() => {
+    getCategories();
+  }, []);
   const onSubmit = (values) => {
-    setError(null);
     setLoading(true);
-    formData.append("token", getToken());
     formData.append("title", values.title);
-    formData.append("image", "");
+    formData.append("image", files[0]);
     formData.append("category", values.category);
-    formData.append("tags", "");
+    formData.append("tags", values.category);
     formData.append("summary", values.summary);
-    formData.append("content", values.content);
+    formData.append("content", content);
     axios({
       method: "post",
-      url: "https://h3-blog.herokuapp.com/post/create",
+      url: ApiBaseURL("post/create"),
+      headers: {
+        "Content-Type": "multipart/form-data",
+        token: getToken(),
+      },
       data: formData,
-      headers: { "Content-Type": "multipart/form-data" },
     })
       .then((response) => {
         console.log(response.data);
@@ -46,8 +103,12 @@ function CreatePost() {
       })
       .catch((error) => {
         setLoading(false);
+        console.log(error.response.data);
       });
   };
+  if (redirect) {
+    return <Redirect to={from} />;
+  }
   return (
     <div>
       <Header />
@@ -97,16 +158,14 @@ function CreatePost() {
                               id="title"
                               name="title"
                               ref={register({
-                                required: true,
-                                maxLength: 100,
+                                required: "Tiêu đề không được để trống.",
+                                maxLength: {
+                                  value: 100,
+                                  message: "Tiêu đề tối đa 100 kí tự.",
+                                },
                               })}
                             />
-                            {errors.title &&
-                              errors.title.type === "required" &&
-                              errorMessage("Tiêu đề không được để trống.")}
-                            {errors.title &&
-                              errors.title.type === "maxLength" &&
-                              errorMessage("Tiêu đề tối đa 100 kí tự.")}
+                            {errors.title && errorMessage(errors.title.message)}
                           </div>
                         </div>
                         <div className="line" />
@@ -115,12 +174,18 @@ function CreatePost() {
                             Ảnh bài viết
                           </label>
                           <div className="col-sm-10">
-                            <input
-                              type="file"
-                              className="form-control"
-                              id="image"
-                              name="image"
-                            />
+                            <div
+                              {...getRootProps({
+                                className: "dropzone form-control",
+                              })}
+                            >
+                              <input {...getInputProps()} />
+                              <p>
+                                Kéo và thả hoặc click vào đây để chọn hình ảnh
+                              </p>
+                            </div>
+                            {errors.image && errorMessage(errors.image.message)}
+                            <aside>{thumbs}</aside>
                           </div>
                         </div>
                         <div className="line" />
@@ -130,14 +195,25 @@ function CreatePost() {
                           </label>
                           <div className="col-sm-10">
                             <select
-                              name="account"
-                              className="form-control mb-3 mb-3"
+                              name="category"
+                              className="form-control"
+                              ref={register({
+                                required: "Thể loại không được để trống.",
+                              })}
                             >
-                              <option>Option 1</option>
-                              <option>Option 2</option>
-                              <option>Option 3</option>
-                              <option>Option 4</option>
+                              <option value="">
+                                -- Chọn thể loại bài viết --
+                              </option>
+                              {categories.map((value, key) => {
+                                return (
+                                  <option key={key} value={value.name}>
+                                    {value.name}
+                                  </option>
+                                );
+                              })}
                             </select>
+                            {errors.category &&
+                              errorMessage(errors.category.message)}
                           </div>
                         </div>
                         <div className="line" />
@@ -154,20 +230,16 @@ function CreatePost() {
                               rows={5}
                               placeholder="Nhập tóm tắt bài viết (không quá 300 kí tự)"
                               ref={register({
-                                required: true,
-                                maxLength: 300,
+                                required:
+                                  "Tóm tắt bài viết không được để trống.",
+                                maxLength: {
+                                  value: 100,
+                                  message: "Tóm tắt bài viết tối đa 100 kí tự.",
+                                },
                               })}
                             ></textarea>
                             {errors.summary &&
-                              errors.summary.type === "required" &&
-                              errorMessage(
-                                "Tóm tắt bài viết không được để trống."
-                              )}
-                            {errors.summary &&
-                              errors.summary.type === "maxLength" &&
-                              errorMessage(
-                                "Tóm tắt bài viết tối đa 100 kí tự."
-                              )}
+                              errorMessage(errors.summary.message)}
                           </div>
                         </div>
                         <div className="line" />
@@ -179,17 +251,48 @@ function CreatePost() {
                             <Editor
                               id="content"
                               className="form-control"
-                              initialValue=""
                               init={{
-                                height: 500,
-                                menubar: false,
-                                plugins: [
-                                  "advlist autolink lists link image charmap print preview anchor",
-                                  "searchreplace visualblocks code fullscreen",
-                                  "insertdatetime media table paste code help wordcount",
-                                ],
-                                toolbar:
-                                  "undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help",
+                                height,
+                                menubar,
+                                plugins,
+                                toolbar,
+                                image_title: true,
+                                automatic_uploads: true,
+                                file_picker_types: 'image',
+                                file_picker_callback: function (
+                                  callback,
+                                  value,
+                                  meta
+                                ) {
+                                  var input = document.createElement("input");
+                                  input.setAttribute("type", "file");
+                                  input.setAttribute("accept", "image/*");
+                                  input.onchange = function () {
+                                    var file = this.files[0];
+                                    var reader = new FileReader();
+                                    reader.onload = function (event) {
+                                      var id = "blobid" + new Date().getTime();
+                                      var blobCache =
+                                        window.tinymce.activeEditor.editorUpload
+                                          .blobCache;
+                                      var base64 = reader.result.split(",")[1];
+                                      var blobInfo = blobCache.create(
+                                        id,
+                                        file,
+                                        base64
+                                      );
+                                      blobCache.add(blobInfo);
+                                      callback(blobInfo.blobUri(), {
+                                        title: file.name,
+                                      });
+                                    };
+                                    reader.readAsDataURL(file);
+                                  };
+                                  input.click();
+                                },
+                              }}
+                              onChange={(event) => {
+                                handleEditorChange(event);
                               }}
                             />
                           </div>
@@ -197,14 +300,14 @@ function CreatePost() {
                         <div className="line" />
                         <div className="form-group row">
                           <div className="col-sm-10 ml-auto">
-                            <button
+                            <input
                               type="submit"
                               className="btn btn-primary mr-3"
-                            >
-                              Tạo bài viết
-                            </button>
+                              value={loading ? "Loading..." : "Tạo bài viết"}
+                              disabled={loading}
+                            />
                             <Link
-                              type="submit"
+                              type="button"
                               className="btn btn btn-secondary"
                               to="/bai-viet"
                             >

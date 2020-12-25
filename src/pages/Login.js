@@ -25,11 +25,11 @@ function Login() {
       url: "https://h3-blog.herokuapp.com/user/login",
       data: {
         email: values.email,
-        password: values.password
-      }
+        password: values.password,
+      },
     })
       .then((response) => {
-        if (response.data.role === "admin") {
+        if (response.data.user.role === "admin") {
           console.log(response.data);
           setLoading(false);
           setUserSession(
@@ -40,6 +40,7 @@ function Login() {
           setRedirect(true);
         } else {
           setError("Chỉ quản trị viên mới có quyền đăng nhập trang này.");
+          setLoading(false);
         }
       })
       .catch((error) => {
@@ -48,6 +49,7 @@ function Login() {
           setError(error.response.data.message);
         } else {
           setError("Có lỗi xảy ra. Vui lòng thử lại.");
+          setLoading(false);
         }
       });
   };
@@ -83,19 +85,17 @@ function Login() {
                         id="email"
                         name="email"
                         ref={register({
-                          required: true,
-                          pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                          required: "Email không được để trống.",
+                          pattern: {
+                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                            message: "Email không hợp lệ",
+                          },
                         })}
                         className="input-material"
                         placeholder="Nhập email đăng nhập"
                         type="email"
                       />
-                      {errors.email &&
-                        errors.email.type === "required" &&
-                        errorMessage("Email không được để trống.")}
-                      {errors.email &&
-                        errors.email.type === "pattern" &&
-                        errorMessage("Email không hợp lệ.")}
+                      {errors.email && errorMessage(errors.email.message)}
                     </div>
                     <div className="form-group">
                       <label htmlFor="password" className="label-material">
@@ -105,19 +105,17 @@ function Login() {
                         id="password"
                         name="password"
                         ref={register({
-                          required: true,
-                          minLength: 6,
+                          required: "Mật khẩu không được để trống.",
+                          minLength: {
+                            value: 6,
+                            message: "Mật khẩu phải có ít nhất 6 kí tự.",
+                          },
                         })}
                         type="password"
                         className="input-material"
                         placeholder="Nhập mật khẩu"
                       />
-                      {errors.password &&
-                        errors.password.type === "required" &&
-                        errorMessage("Mật khẩu không được để trống.")}
-                      {errors.password &&
-                        errors.password.type === "minLength" &&
-                        errorMessage("Mật khẩu phải có ít nhất 6 kí tự.")}
+                      {errors.password && errorMessage(errors.password.message)}
                     </div>
                     <div className="form-group">
                       <input

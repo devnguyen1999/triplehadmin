@@ -117,26 +117,7 @@ function Home() {
           <section className="no-padding-bottom">
             <div className="container-fluid">
               <div className="row">
-                <div className="col-lg-4">
-                  <div className="bar-chart block no-margin-bottom">
-                    <canvas id="barChartExample1" />
-                  </div>
-                  <div className="bar-chart block">
-                    <canvas id="barChartExample2" />
-                  </div>
-                </div>
-                <div className="col-lg-8">
-                  <div className="line-cahrt block">
-                    <canvas id="lineCahrt" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-          <section className="no-padding-bottom">
-            <div className="container-fluid">
-              <div className="row">
-                <div className="col-lg-6">
+                <div className="col-lg-12">
                   <div className="stats-2-block block d-flex">
                     <div className="stats-2 d-flex">
                       <div className="stats-2-arrow low">
@@ -208,11 +189,6 @@ function Home() {
                     </div>
                   </div>
                 </div>
-                <div className="col-lg-6">
-                  <div className="drills-chart block">
-                    <canvas id="lineChart1" />
-                  </div>
-                </div>
               </div>
             </div>
           </section>
@@ -223,7 +199,7 @@ function Home() {
                   <div className="user-block block text-center">
                     <div className="avatar">
                       <img
-                        src="img/avatar-1.jpg"
+                        src="../assets/img/avatar-1.jpg"
                         alt="..."
                         className="img-fluid"
                       />
@@ -254,7 +230,7 @@ function Home() {
                   <div className="user-block block text-center">
                     <div className="avatar">
                       <img
-                        src="img/avatar-4.jpg"
+                        src="../assets/img/avatar-4.jpg"
                         alt="..."
                         className="img-fluid"
                       />
@@ -285,7 +261,7 @@ function Home() {
                   <div className="user-block block text-center">
                     <div className="avatar">
                       <img
-                        src="img/avatar-6.jpg"
+                        src="../assets/img/avatar-6.jpg"
                         alt="..."
                         className="img-fluid"
                       />
@@ -320,7 +296,7 @@ function Home() {
                     <div className="avatar">
                       {" "}
                       <img
-                        src="img/avatar-1.jpg"
+                        src="../assets/img/avatar-1.jpg"
                         alt="..."
                         className="img-fluid"
                       />
@@ -358,7 +334,7 @@ function Home() {
                     <div className="avatar">
                       {" "}
                       <img
-                        src="img/avatar-2.jpg"
+                        src="../assets/img/avatar-2.jpg"
                         alt="..."
                         className="img-fluid"
                       />
@@ -396,7 +372,7 @@ function Home() {
                     <div className="avatar">
                       {" "}
                       <img
-                        src="img/avatar-6.jpg"
+                        src="../assets/img/avatar-6.jpg"
                         alt="..."
                         className="img-fluid"
                       />
@@ -598,7 +574,7 @@ function Home() {
                       <a href="#" className="message d-flex align-items-center">
                         <div className="profile">
                           <img
-                            src="img/avatar-3.jpg"
+                            src="../assets/img/avatar-3.jpg"
                             alt="..."
                             className="img-fluid"
                           />
@@ -616,7 +592,7 @@ function Home() {
                       <a href="#" className="message d-flex align-items-center">
                         <div className="profile">
                           <img
-                            src="img/avatar-2.jpg"
+                            src="../assets/img/avatar-2.jpg"
                             alt="..."
                             className="img-fluid"
                           />
@@ -634,7 +610,7 @@ function Home() {
                       <a href="#" className="message d-flex align-items-center">
                         <div className="profile">
                           <img
-                            src="img/avatar-1.jpg"
+                            src="../assets/img/avatar-1.jpg"
                             alt="..."
                             className="img-fluid"
                           />
@@ -652,7 +628,7 @@ function Home() {
                       <a href="#" className="message d-flex align-items-center">
                         <div className="profile">
                           <img
-                            src="img/avatar-5.jpg"
+                            src="../assets/img/avatar-5.jpg"
                             alt="..."
                             className="img-fluid"
                           />
@@ -670,7 +646,7 @@ function Home() {
                       <a href="#" className="message d-flex align-items-center">
                         <div className="profile">
                           <img
-                            src="img/avatar-1.jpg"
+                            src="../assets/img/avatar-1.jpg"
                             alt="..."
                             className="img-fluid"
                           />

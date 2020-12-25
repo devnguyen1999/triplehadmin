@@ -4,21 +4,48 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { ApiBaseURL } from "../ApiBaseURL";
+import { getToken } from "../HandleUser";
 
 function Posts() {
   const [posts, setPosts] = useState([]);
-  useEffect(() => {
+  const [loading, setLoading] = useState(false);
+  const getPosts = () => {
     axios({
       method: "get",
-      url: "https://h3-blog.herokuapp.com/post/load?page=1&pageSize=2",
+      url: ApiBaseURL("post/load?page=1&pageSize=30"),
     })
       .then((response) => {
         setPosts(response.data.data);
-        console.log(posts);
       })
       .catch((error) => {
         console.log(error.response);
       });
+  };
+  const deletePost = (event, id) => {
+    event.preventDefault();
+    event.target.value = "Loading...";
+    axios({
+      method: "post",
+      url: "https://h3-blog.herokuapp.com/post/delete",
+      headers: {
+        token: getToken(),
+      },
+      data: {
+        id: id,
+      },
+    })
+      .then((response) => {
+        console.log(response.data);
+        getPosts();
+      })
+      .catch((error) => {
+        console.log(error.response);
+        event.target.value = "Xoá";
+      });
+  };
+  useEffect(() => {
+    getPosts();
   }, []);
   return (
     <div>
@@ -57,24 +84,44 @@ function Posts() {
                             <th>Tiêu đề</th>
                             <th>Hình ảnh</th>
                             <th>Thể loại</th>
-                            <th>Tóm tắt</th>
-                            <th>Ngày đăng</th>
-                            <th>Ngày cập nhật</th>
                             <th>Hành động</th>
                           </tr>
                         </thead>
                         <tbody>
                           {posts.map((value, key) => {
+                            // console.log(value);
                             return (
-                              <tr>
+                              <tr key={key}>
                                 <th scope="row">{key}</th>
                                 <td>{value.title}</td>
-                                <td>{value.image}</td>
+                                <td>
+                                  <img
+                                    src={value.img}
+                                    alt={value.title}
+                                    className="img-fluid"
+                                    style={{ width: "15rem" }}
+                                  />
+                                </td>
                                 <td>{value.category}</td>
-                                <td>{value.summary}</td>
-                                <td>{value.createdAt}</td>
-                                <td>{value.updatedAt}</td>
-                                <td>Actions</td>
+                                <td className="actions">
+                                    <Link
+                                      type="button"
+                                      className="btn btn-warning w-100 mb-1"
+                                      to={
+                                        "/bai-viet/chinh-sua/" + value.nameUrl
+                                      }
+                                    >
+                                      Chỉnh sửa
+                                    </Link>
+                                    <input
+                                      type="button"
+                                      className="btn btn-danger w-100 mt-2"
+                                      onClick={(event) => {
+                                        deletePost(event, value.id);
+                                      }}
+                                      value="Xoá"
+                                    />
+                                </td>
                               </tr>
                             );
                           })}

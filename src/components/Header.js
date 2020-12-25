@@ -21,7 +21,7 @@ function Header() {
       }
     })
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         removeUserSession();
         setRedirect(true);
       })
@@ -72,7 +72,7 @@ function Header() {
             </div>
             <div className="right-menu list-inline no-margin-bottom">
               <div className="list-inline-item">
-                <a href="#" className="search-open nav-link">
+                <a href="#!" className="search-open nav-link">
                   <i className="icon-magnifying-glass-browser" />
                 </a>
               </div>
@@ -93,7 +93,7 @@ function Header() {
                   className="dropdown-menu messages"
                 >
                   <a
-                    href="#"
+                    href="#!"
                     className="dropdown-item message d-flex align-items-center"
                   >
                     <div className="profile">
@@ -113,7 +113,7 @@ function Header() {
                     </div>
                   </a>
                   <a
-                    href="#"
+                    href="#!"
                     className="dropdown-item message d-flex align-items-center"
                   >
                     <div className="profile">
@@ -133,7 +133,7 @@ function Header() {
                     </div>
                   </a>
                   <a
-                    href="#"
+                    href="#!"
                     className="dropdown-item message d-flex align-items-center"
                   >
                     <div className="profile">
@@ -153,7 +153,7 @@ function Header() {
                     </div>
                   </a>
                   <a
-                    href="#"
+                    href="#!"
                     className="dropdown-item message d-flex align-items-center"
                   >
                     <div className="profile">
@@ -172,7 +172,7 @@ function Header() {
                       <small className="date d-block">10:30pm</small>
                     </div>
                   </a>
-                  <a href="#" className="dropdown-item text-center message">
+                  <a href="#!" className="dropdown-item text-center message">
                     <strong>
                       See All Messages <i className="fa fa-angle-right" />
                     </strong>
@@ -196,7 +196,7 @@ function Header() {
                   aria-labelledby="navbarDropdownMenuLink2"
                   className="dropdown-menu tasks-list"
                 >
-                  <a href="#" className="dropdown-item">
+                  <a href="#!" className="dropdown-item">
                     <div className="text d-flex justify-content-between">
                       <strong>Task 1</strong>
                       <span>40% complete</span>
@@ -212,7 +212,7 @@ function Header() {
                       />
                     </div>
                   </a>
-                  <a href="#" className="dropdown-item">
+                  <a href="#!" className="dropdown-item">
                     <div className="text d-flex justify-content-between">
                       <strong>Task 2</strong>
                       <span>20% complete</span>
@@ -228,7 +228,7 @@ function Header() {
                       />
                     </div>
                   </a>
-                  <a href="#" className="dropdown-item">
+                  <a href="#!" className="dropdown-item">
                     <div className="text d-flex justify-content-between">
                       <strong>Task 3</strong>
                       <span>70% complete</span>
@@ -244,7 +244,7 @@ function Header() {
                       />
                     </div>
                   </a>
-                  <a href="#" className="dropdown-item">
+                  <a href="#!" className="dropdown-item">
                     <div className="text d-flex justify-content-between">
                       <strong>Task 4</strong>
                       <span>30% complete</span>
@@ -260,7 +260,7 @@ function Header() {
                       />
                     </div>
                   </a>
-                  <a href="#" className="dropdown-item">
+                  <a href="#!" className="dropdown-item">
                     <div className="text d-flex justify-content-between">
                       <strong>Task 5</strong>
                       <span>65% complete</span>
@@ -276,7 +276,7 @@ function Header() {
                       />
                     </div>
                   </a>
-                  <a href="#" className="dropdown-item text-center">
+                  <a href="#!" className="dropdown-item text-center">
                     <strong>
                       See All Tasks <i className="fa fa-angle-right" />
                     </strong>

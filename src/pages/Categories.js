@@ -4,21 +4,25 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { ApiBaseURL } from "../ApiBaseURL";
 
 function Categories() {
   const [categories, setCategories] = useState([]);
-  useEffect(() => {
+  const getCategories = () => {
     axios({
       method: "get",
-      url: "https://h3-blog.herokuapp.com/category/load",
+      url: ApiBaseURL("category/load"),
     })
       .then((response) => {
-        setCategories(response.data.data);
         console.log(response.data.data);
+        setCategories(response.data.data);
       })
       .catch((error) => {
         console.log(error.response);
       });
+  }
+  useEffect(() => {
+    getCategories();
   }, []);
   return (
     <div>
@@ -62,11 +66,19 @@ function Categories() {
                         <tbody>
                           {categories.map((value, key) => {
                             return (
-                              <tr>
+                              <tr key={key}>
                                 <th scope="row">{key}</th>
                                 <td>{value.name}</td>
-                                <td>{value.status}</td>
-                                <td>Actions</td>
+                                <td>{value.status === "available" ? "Khả dụng" : "Không khả dụng"}</td>
+                                <td className="actions">
+                                    <Link
+                                      type="button"
+                                      className="btn btn-warning w-100 mb-1"
+                                      to={"/the-loai/chinh-sua/" + value.nameUrl}
+                                    >
+                                      Chỉnh sửa
+                                    </Link>
+                                  </td>
                               </tr>
                             );
                           })}
