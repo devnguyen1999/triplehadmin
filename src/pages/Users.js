@@ -7,6 +7,12 @@ import { getToken } from '../HandleUser';
 const axios = require('axios').default;
 
 function User() {
+  const Users = [
+    {name: "Trương Pháp 1", role: "admin", _id: "5fb9daabde3e551940029dae", email: "truongphapdh1@gmail.com"},
+    {name: "Trương Pháp 2", role: "admin", _id: "5fb9daabde3e551940029dae", email: "truongphapdh2@gmail.com"},
+    {name: "Trương Pháp 3", role: "admin", _id: "5fb9daabde3e551940029dae", email: "truongphapdh3@gmail.com"},
+    {name: "Trương Pháp 4", role: "admin", _id: "5fb9daabde3e551940029dae", email: "truongphapdh4@gmail.com"},
+  ];
   let url = ApiBaseURL('user/loadAllUser');
   const token = getToken();
   url += `?token=${token}`;
@@ -18,7 +24,7 @@ function User() {
       .get(url)
       .then(function (response) {
         console.log(response.data);
-        setUsers(response.data);
+        setUsers(response.data.data);
       })
       .catch((errors) => {});
   }, []);
@@ -35,8 +41,30 @@ function User() {
               <h2 className='h5 no-margin-bottom'>Người dùng</h2>
             </div>
           </div>
-          <div>Hien thi nguoi dung o day</div>
-          {console.log(users)}
+          <div>
+            <table style={{margin: '15px', width: '60%'}}>
+              <tr>
+                <th style={{padding: '7px'}}>Username</th>
+                <th style={{padding: '7px'}}>Role</th>
+                <th style={{padding: '7px'}}>Email</th>
+              </tr>
+              <tr>
+                <td style={{padding: '7px'}}>{ Users[0].name }</td>
+                <td style={{padding: '7px'}}>{ Users[0].role }</td>
+                <td style={{padding: '7px'}}>{ Users[0].email }</td>
+              </tr>
+              <tr>
+                <td style={{padding: '7px'}}>{ Users[1].name }</td>
+                <td style={{padding: '7px'}}>{ Users[1].role }</td>
+                <td style={{padding: '7px'}}>{ Users[1].email }</td>
+              </tr>
+              <tr>
+                <td style={{padding: '7px'}}>{ Users[2].name }</td>
+                <td style={{padding: '7px'}}>{ Users[2].role }</td>
+                <td style={{padding: '7px'}}>{ Users[2].email }</td>
+              </tr>
+            </table>
+          </div>
           <Footer />
         </div>
       </div>
