@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Redirect, Link } from "react-router-dom";
 import { getToken, removeUserSession } from "../HandleUser";
+import { ApiBaseURL } from "../ApiBaseURL";
 
 function Header() {
   const { from } = { from: { pathname: "/dang-nhap" } };
@@ -15,7 +16,7 @@ function Header() {
     event.preventDefault();
     axios({
       method: "post",
-      url: "https://h3-blog.herokuapp.com/user/logout",
+      url: ApiBaseURL("user/logout"),
       data: {
         token: getToken()
       }

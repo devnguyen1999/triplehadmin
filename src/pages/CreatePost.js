@@ -52,7 +52,7 @@ function CreatePost() {
   const height = 500;
   const menubar = false;
   const plugins =
-    "link image code table textcolor colorpicker fullscreen hr lists";
+    "link image code table fullscreen hr lists";
   const toolbar =
     "fontselect fontsizeselect formatselect | " +
     "bold italic underline strikethrough subscript superscript | " +
@@ -160,8 +160,8 @@ function CreatePost() {
                               ref={register({
                                 required: "Tiêu đề không được để trống.",
                                 maxLength: {
-                                  value: 100,
-                                  message: "Tiêu đề tối đa 100 kí tự.",
+                                  value: 70,
+                                  message: "Tiêu đề tối đa 70 kí tự.",
                                 },
                               })}
                             />
@@ -226,15 +226,14 @@ function CreatePost() {
                               className="form-control h-100"
                               id="summary"
                               name="summary"
-                              maxLength={300}
                               rows={5}
                               placeholder="Nhập tóm tắt bài viết (không quá 300 kí tự)"
                               ref={register({
                                 required:
                                   "Tóm tắt bài viết không được để trống.",
                                 maxLength: {
-                                  value: 100,
-                                  message: "Tóm tắt bài viết tối đa 100 kí tự.",
+                                  value: 150,
+                                  message: "Tóm tắt bài viết tối đa 150 kí tự.",
                                 },
                               })}
                             ></textarea>
@@ -258,7 +257,7 @@ function CreatePost() {
                                 toolbar,
                                 image_title: true,
                                 automatic_uploads: true,
-                                file_picker_types: 'image',
+                                file_picker_types: "image",
                                 file_picker_callback: function (
                                   callback,
                                   value,

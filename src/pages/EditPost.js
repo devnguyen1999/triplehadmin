@@ -1,172 +1,252 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { ApiBaseURL } from '../ApiBaseURL';
-import { Link, useParams, Redirect } from 'react-router-dom';
-import Header from '../components/Header';
-import Sidebar from '../components/Sidebar';
-import Footer from '../components/Footer';
-import { Editor } from '@tinymce/tinymce-react';
-import { getToken } from '../HandleUser';
-import { useForm } from 'react-hook-form';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { ApiBaseURL } from "../ApiBaseURL";
+import { Redirect, Link, useParams } from "react-router-dom";
+import Header from "../components/Header";
+import Sidebar from "../components/Sidebar";
+import Footer from "../components/Footer";
+import { Editor } from "@tinymce/tinymce-react";
+import { getToken } from "../HandleUser";
+import { useForm } from "react-hook-form";
+import { useDropzone } from "react-dropzone";
 
 function EditPost() {
+  let { slug } = useParams();
   const { handleSubmit, register, errors } = useForm();
   const [loading, setLoading] = useState(false);
-  const [post, setPost] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [content, setContent] = useState(null);
   var formData = new FormData();
-  const { from } = { from: { pathname: '/bai-viet' } };
+  const { from } = { from: { pathname: "/bai-viet" } };
   const [redirect, setRedirect] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [post, setPost] = useState([]);
+  const [originalImg, setOriginalImg] = useState();
+  const [category, setCategory] = useState();
   const errorMessage = (error) => {
-    return <small className='error'>{error}</small>;
+    return <small className="error">{error}</small>;
   };
-  const handleImageChange = (event) => {
-    setSelectedFile(event.target.files[0]);
-  };
-  let { slug } = useParams();
-  let one = ApiBaseURL('category/load');
-  let two = ApiBaseURL('post/load/' + slug);
-  useEffect(() => {
-    const requestOne = axios.get(one);
-    const requestTwo = axios.get(two);
-    axios
-      .all([requestOne, requestTwo])
-      .then(
-        axios.spread((...responses) => {
-          setCategories(responses[0].data.data);
-          setPost(responses[1].data);
-        })
-      )
-      .catch((errors) => {});
-  }, []);
 
+  const [files, setFiles] = useState([]);
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: "image/*",
+    maxFiles: 1,
+    onDrop: (acceptedFiles) => {
+      setOriginalImg(null);
+      setFiles(
+        acceptedFiles.map((file) =>
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          })
+        )
+      );
+    },
+  });
+  const originalThumbs = () => {
+    if (originalImg) {
+      return (
+        <aside>
+          <div>
+            <img className="img-fluid mt-3" src={originalImg} />
+          </div>
+        </aside>
+      );
+    } else {
+      return null;
+    }
+  };
+  const thumbs = files.map((file) => {
+    return (
+      <div key={file.name}>
+        <img className="img-fluid mt-3" src={file.preview} />
+      </div>
+    );
+  });
+  useEffect(() => {
+    files.forEach((file) => URL.revokeObjectURL(file.preview));
+  }, [files]);
+
+  const height = 500;
+  const menubar = false;
+  const plugins = "link image code table fullscreen hr lists";
+  const toolbar =
+    "fontselect fontsizeselect formatselect | " +
+    "bold italic underline strikethrough subscript superscript | " +
+    "blockquote removeformat | forecolor backcolor | " +
+    "alignleft aligncenter alignright alignjustify | " +
+    "indent outdent | numlist bullist | " +
+    "link unlink | hr table image | fullscreen code | undo redo";
+  const handleEditorChange = (event) => {
+    setContent(event.target.getContent());
+  };
+  const handleCategoryChange = (event) => {
+    setCategory(event.target.value);
+  };
+  const getCategories = () => {
+    axios({
+      method: "get",
+      url: ApiBaseURL("category/load"),
+    })
+      .then((response) => {
+        setCategories(response.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const getPost = () => {
+    axios({
+      method: "get",
+      url: ApiBaseURL("post/load/" + slug),
+    })
+      .then((response) => {
+        setPost(response.data);
+        setOriginalImg(response.data.img);
+        setCategory(response.data.category);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  useEffect(() => {
+    getCategories();
+    getPost();
+  }, []);
   const onSubmit = (values) => {
-    // setLoading(true);
-    // formData.append("title", values.title);
-    // formData.append("image", selectedFile);
-    // formData.append("category", values.category);
-    // formData.append("tags", values.category);
-    // formData.append("summary", values.summary);
-    // formData.append("content", values.content);
-    // axios({
-    //   method: "post",
-    //   url: ApiBaseURL("post/create"),
-    //   data: formData,
-    //   headers: {
-    //     "Content-Type": "multipart/form-data",
-    //     token: getToken(),
-    //   },
-    // })
-    //   .then((response) => {
-    //     console.log(response.data);
-    //     setLoading(false);
-    //     setRedirect(true);
-    //   })
-    //   .catch((error) => {
-    //     setLoading(false);
-    //     console.log(error.response.data);
-    //   });
+    setLoading(true);
+    formData.append("title", values.title);
+    formData.append("image", files[0]);
+    formData.append("category", values.category);
+    formData.append("tags", values.category);
+    formData.append("summary", values.summary);
+    formData.append("content", content);
+    formData.append("id", post.id);
+    axios({
+      method: "post",
+      url: ApiBaseURL("post/update"),
+      headers: {
+        "Content-Type": "multipart/form-data",
+        token: getToken(),
+      },
+      data: formData,
+    })
+      .then((response) => {
+        console.log(response.data);
+        setLoading(false);
+        setRedirect(true);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error);
+      });
   };
   if (redirect) {
     return <Redirect to={from} />;
   }
-  console.log('post: ', post);
   return (
     <div>
       <Header />
-      <div className='d-flex align-items-stretch'>
+      <div className="d-flex align-items-stretch">
         {/* Sidebar Navigation Start Here */}
         <Sidebar />
         {/* Sidebar Navigation End Here*/}
-        <div className='page-content'>
+        <div className="page-content">
           {/* Page Header*/}
-          <div className='page-header no-margin-bottom'>
-            <div className='container-fluid'>
-              <h2 className='h5 no-margin-bottom'>Chỉnh sửa bài viết</h2>
+          <div className="page-header no-margin-bottom">
+            <div className="container-fluid">
+              <h2 className="h5 no-margin-bottom">Tạo bài viết</h2>
             </div>
           </div>
           {/* Breadcrumb*/}
-          <div className='container-fluid'>
-            <ul className='breadcrumb'>
-              <li className='breadcrumb-item'>
-                <Link to='/admin'>Trang chủ</Link>
+          <div className="container-fluid">
+            <ul className="breadcrumb">
+              <li className="breadcrumb-item">
+                <Link to="/admin">Trang chủ</Link>
               </li>
-              <li className='breadcrumb-item active'>Chỉnh sửa bài viết</li>
+              <li className="breadcrumb-item active">Tạo bài viết</li>
             </ul>
           </div>
-          <section className='no-padding-top'>
-            <div className='container-fluid'>
-              <div className='row'>
+          <section className="no-padding-top">
+            <div className="container-fluid">
+              <div className="row">
                 {/* Form Elements */}
-                <div className='col-lg-12'>
-                  <div className='block'>
-                    <div className='title'>
-                      <strong>Chỉnh sửa bài viết</strong>
+                <div className="col-lg-12">
+                  <div className="block">
+                    <div className="title">
+                      <strong>Tạo bài viết mới</strong>
                     </div>
-                    <div className='block-body'>
+                    <div className="block-body">
                       <form
-                        className='form-horizontal'
+                        className="form-horizontal"
                         onSubmit={handleSubmit(onSubmit)}
                       >
-                        <div className='form-group row'>
-                          <label className='col-sm-2 form-control-label'>
+                        <div className="form-group row">
+                          <label className="col-sm-2 form-control-label">
                             Tiêu đề
                           </label>
-                          <div className='col-sm-10'>
+                          <div className="col-sm-10">
                             <input
-                              type='text'
-                              placeholder='Nhập tên bài viết (không quá 100 kí tự)'
-                              className='form-control'
-                              id='title'
-                              name='title'
+                              type="text"
+                              placeholder="Nhập tên bài viết (không quá 100 kí tự)"
+                              className="form-control"
+                              id="title"
+                              name="title"
                               ref={register({
-                                required: 'Tiêu đề không được để trống.',
+                                required: "Tiêu đề không được để trống.",
                                 maxLength: {
-                                  value: 100,
-                                  message: 'Tiêu đề tối đa 100 kí tự.',
+                                  value: 70,
+                                  message: "Tiêu đề tối đa 70 kí tự.",
                                 },
                               })}
+                              defaultValue={post.title}
                             />
                             {errors.title && errorMessage(errors.title.message)}
                           </div>
                         </div>
-                        <div className='line' />
-                        <div className='form-group row'>
-                          <label className='col-sm-2 form-control-label'>
+                        <div className="line" />
+                        <div className="form-group row">
+                          <label className="col-sm-2 form-control-label">
                             Ảnh bài viết
                           </label>
-                          <div className='col-sm-10'>
-                            <input
-                              type='file'
-                              className='form-control'
-                              id='image'
-                              name='image'
-                              onChange={(event) => {
-                                handleImageChange(event);
-                              }}
-                            />
-                          </div>
-                        </div>
-                        <div className='line' />
-                        <div className='form-group row'>
-                          <label className='col-sm-2 form-control-label'>
-                            Thể loại
-                          </label>
-                          <div className='col-sm-10'>
-                            <select
-                              name='category'
-                              className='form-control'
-                              ref={register({
-                                required: 'Thể loại không được để trống.',
+                          <div className="col-sm-10">
+                            <div
+                              {...getRootProps({
+                                className: "dropzone form-control",
                               })}
                             >
-                              <option value=''>
+                              <input {...getInputProps()} />
+                              <p>
+                                Kéo và thả hoặc click vào đây để chọn hình ảnh
+                              </p>
+                            </div>
+                            {errors.image && errorMessage(errors.image.message)}
+                            <aside>{thumbs}</aside>
+                            {originalThumbs()}
+                          </div>
+                        </div>
+                        <div className="line" />
+                        <div className="form-group row">
+                          <label className="col-sm-2 form-control-label">
+                            Thể loại
+                          </label>
+                          <div className="col-sm-10">
+                            <select
+                              name="category"
+                              className="form-control"
+                              ref={register({
+                                required: "Thể loại không được để trống.",
+                              })}
+                              value={category}
+                              onChange={(event) => {
+                                handleCategoryChange(event);
+                              }}
+                            >
+                              <option value="">
                                 -- Chọn thể loại bài viết --
                               </option>
                               {categories.map((value, key) => {
                                 return (
-                                  <option value={value.name}>
+                                  <option key={key} value={value.name}>
                                     {value.name}
                                   </option>
                                 );
@@ -176,73 +256,101 @@ function EditPost() {
                               errorMessage(errors.category.message)}
                           </div>
                         </div>
-                        <div className='line' />
-                        <div className='form-group row'>
-                          <label className='col-sm-2 form-control-label'>
+                        <div className="line" />
+                        <div className="form-group row">
+                          <label className="col-sm-2 form-control-label">
                             Tóm tắt bài viết
                           </label>
-                          <div className='col-sm-10'>
+                          <div className="col-sm-10">
                             <textarea
-                              className='form-control h-100'
-                              id='summary'
-                              name='summary'
-                              maxLength={300}
+                              className="form-control h-100"
+                              id="summary"
+                              name="summary"
                               rows={5}
-                              placeholder='Nhập tóm tắt bài viết (không quá 300 kí tự)'
+                              placeholder="Nhập tóm tắt bài viết (không quá 300 kí tự)"
                               ref={register({
                                 required:
-                                  'Tóm tắt bài viết không được để trống.',
+                                  "Tóm tắt bài viết không được để trống.",
                                 maxLength: {
-                                  value: 100,
-                                  message: 'Tóm tắt bài viết tối đa 100 kí tự.',
+                                  value: 150,
+                                  message: "Tóm tắt bài viết tối đa 150 kí tự.",
                                 },
                               })}
+                              defaultValue={post.summary}
                             ></textarea>
                             {errors.summary &&
                               errorMessage(errors.summary.message)}
                           </div>
                         </div>
-                        <div className='line' />
-                        <div className='form-group row content'>
-                          <label className='col-sm-2 form-control-label'>
+                        <div className="line" />
+                        <div className="form-group row content">
+                          <label className="col-sm-2 form-control-label">
                             Nội dung bài viết
                           </label>
-                          <div className='col-sm-10'>
-                            {post && (
-                              <Editor
-                                initialValue={post.content}
-                                id='content'
-                                className='form-control'
-                                init={{
-                                  height: 500,
-                                  menubar: false,
-                                  plugins: [
-                                    'advlist autolink lists link image charmap print preview anchor',
-                                    'searchreplace visualblocks code fullscreen',
-                                    'insertdatetime media table paste code help wordcount',
-                                  ],
-                                  toolbar:
-                                    'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-                                }}
-                              />
-                            )}
+                          <div className="col-sm-10">
+                            <Editor
+                              id="content"
+                              className="form-control"
+                              init={{
+                                height,
+                                menubar,
+                                plugins,
+                                toolbar,
+                                image_title: true,
+                                automatic_uploads: true,
+                                file_picker_types: "image",
+                                file_picker_callback: function (
+                                  callback,
+                                  value,
+                                  meta
+                                ) {
+                                  var input = document.createElement("input");
+                                  input.setAttribute("type", "file");
+                                  input.setAttribute("accept", "image/*");
+                                  input.onchange = function () {
+                                    var file = this.files[0];
+                                    var reader = new FileReader();
+                                    reader.onload = function (event) {
+                                      var id = "blobid" + new Date().getTime();
+                                      var blobCache =
+                                        window.tinymce.activeEditor.editorUpload
+                                          .blobCache;
+                                      var base64 = reader.result.split(",")[1];
+                                      var blobInfo = blobCache.create(
+                                        id,
+                                        file,
+                                        base64
+                                      );
+                                      blobCache.add(blobInfo);
+                                      callback(blobInfo.blobUri(), {
+                                        title: file.name,
+                                      });
+                                    };
+                                    reader.readAsDataURL(file);
+                                  };
+                                  input.click();
+                                },
+                              }}
+                              onChange={(event) => {
+                                handleEditorChange(event);
+                              }}
+                              value={post.content}
+                            />
                           </div>
                         </div>
-                        <div className='line' />
-                        <div className='form-group row'>
-                          <div className='col-sm-10 ml-auto'>
+                        <div className="line" />
+                        <div className="form-group row">
+                          <div className="col-sm-10 ml-auto">
                             <input
-                              type='submit'
-                              className='btn btn-primary mr-3'
-                              value={
-                                loading ? 'Loading...' : 'Cập nhật bài viết'
-                              }
+                              type="submit"
+                              className="btn btn-primary mr-3"
+                              value={loading ? "Loading..." : "Cập nhật bài viết"}
                               disabled={loading}
                             />
                             <Link
-                              type='submit'
-                              className='btn btn btn-secondary'
-                              to='/bai-viet'
+                              type="button"
+                              className="btn btn btn-secondary"
+                              to="/bai-viet"
                             >
                               Huỷ bỏ
                             </Link>

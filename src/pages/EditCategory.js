@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
@@ -7,16 +8,15 @@ import Footer from "../components/Footer";
 import { getToken } from "../HandleUser";
 import { Redirect } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
-
-function EditCategory() {
+import { ApiBaseURL } from "../ApiBaseURL";
+function EditCategory(props) {
   const { handleSubmit, register, errors, control } = useForm();
   const [loading, setLoading] = useState(false);
-  const { from } = { from: { pathname: "/bai-viet" } };
+  const { from } = { from: { pathname: "/the-loai" } };
   const [redirect, setRedirect] = useState(false);
   const errorMessage = (error) => {
     return <small className="error">{error}</small>;
   };
-
   if (redirect) {
     return <Redirect to={from} />;
   }
@@ -24,19 +24,20 @@ function EditCategory() {
     setLoading(true);
     axios({
       method: "post",
-      url: "https://h3-blog.herokuapp.com/category/update",
+      url: ApiBaseURL("category/update"),
       headers: {
         token: getToken(),
       },
       data: {
+        id: props.location.params.id,
         name: values.name,
-        id: values.name,
         status: values.status,
       },
     })
       .then((response) => {
         setLoading(false);
         setRedirect(true);
+        console.log(response);
       })
       .catch((error) => {
         setLoading(false);
@@ -91,6 +92,7 @@ function EditCategory() {
                               className="form-control"
                               id="name"
                               name="name"
+                              defaultValue={props.location.params.name}
                               ref={register({
                                 required: "Tên thể loại không được để trống.",
                                 maxLength: {
@@ -104,22 +106,22 @@ function EditCategory() {
                         </div>
                         <div className="line" />
                         {/* <div className="form-group row">
-                          <label className="col-sm-2 form-control-label">
-                            Thể loại
-                          </label>
-                          <div className="col-sm-10">
-                            <select
-                              name="account"
-                              className="form-control mb-3 mb-3"
-                            >
-                              <option>Option 1</option>
-                              <option>Option 2</option>
-                              <option>Option 3</option>
-                              <option>Option 4</option>
-                            </select>
-                          </div>
+                        <label className="col-sm-2 form-control-label">
+                          Thể loại
+                        </label>
+                        <div className="col-sm-10">
+                          <select
+                            name="account"
+                            className="form-control mb-3 mb-3"
+                          >
+                            <option>Option 1</option>
+                            <option>Option 2</option>
+                            <option>Option 3</option>
+                            <option>Option 4</option>
+                          </select>
                         </div>
-                        <div className="line" /> */}
+                      </div>
+                      <div className="line" /> */}
                         <div className="form-group row">
                           <label className="col-sm-2 form-control-label">
                             Trạng thái
@@ -128,8 +130,10 @@ function EditCategory() {
                             <input
                               id="available"
                               type="radio"
-                              defaultChecked
                               defaultValue="available"
+                              defaultChecked={
+                                (props.location.params.status === "available")
+                              }
                               name="status"
                               className="radio-template"
                               ref={register}
@@ -141,6 +145,9 @@ function EditCategory() {
                               id="unavailable"
                               type="radio"
                               defaultValue="unavailable"
+                              defaultChecked={
+                                (props.location.params.status === "unavailable")
+                              }
                               name="status"
                               className="radio-template"
                               ref={register}
@@ -154,7 +161,9 @@ function EditCategory() {
                             <input
                               type="submit"
                               className="btn btn-primary mr-3"
-                              value={loading ? "Loading..." : "Cập nhật thể loại"}
+                              value={
+                                loading ? "Loading..." : "Cập nhật thể loại"
+                              }
                               disabled={loading}
                             />
                             <Link
@@ -178,5 +187,7 @@ function EditCategory() {
     </div>
   );
 }
+
+EditCategory.propTypes = {};
 
 export default EditCategory;

@@ -98,13 +98,12 @@ function Posts() {
                             return (
                               <tr key={key}>
                                 <th scope="row">{key}</th>
-                                <td>{value.title}</td>
-                                <td>
+                                <td className="title">{value.title}</td>
+                                <td  className="image">
                                   <img
                                     src={value.img}
                                     alt={value.title}
                                     className="img-fluid"
-                                    style={{ width: "15rem" }}
                                   />
                                 </td>
                                 <td>{value.category}</td>

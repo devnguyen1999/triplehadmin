@@ -10,7 +10,6 @@ import CreateCategory from './pages/CreateCategory';
 import CreatePost from './pages/CreatePost';
 import EditCategory from './pages/EditCategory';
 import EditPost from './pages/EditPost';
-import Users from './pages/Users';
 function Routes() {
   return (
     <Switch>
@@ -25,7 +24,6 @@ function Routes() {
       <PrivateRoute path='/bai-viet' component={Posts} />
       <PrivateRoute path='/tao-the-loai' component={CreateCategory} />
       <PrivateRoute path='/tao-bai-viet' component={CreatePost} />
-      <PrivateRoute path='/nguoi-dung' component={Users} />
     </Switch>
   );
 }

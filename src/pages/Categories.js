@@ -20,7 +20,7 @@ function Categories() {
       .catch((error) => {
         console.log(error.response);
       });
-  }
+  };
   useEffect(() => {
     getCategories();
   }, []);
@@ -69,16 +69,28 @@ function Categories() {
                               <tr key={key}>
                                 <th scope="row">{key}</th>
                                 <td>{value.name}</td>
-                                <td>{value.status === "available" ? "Khả dụng" : "Không khả dụng"}</td>
+                                <td>
+                                  {value.status === "available"
+                                    ? "Khả dụng"
+                                    : "Không khả dụng"}
+                                </td>
                                 <td className="actions">
-                                    <Link
-                                      type="button"
-                                      className="btn btn-warning w-100 mb-1"
-                                      to={"/the-loai/chinh-sua/" + value.nameUrl}
-                                    >
-                                      Chỉnh sửa
-                                    </Link>
-                                  </td>
+                                  <Link
+                                    type="button"
+                                    className="btn btn-warning w-100 mb-1"
+                                    to={{
+                                      pathname:
+                                        "/the-loai/chinh-sua/" + value.nameUrl,
+                                      params: {
+                                        id: value._id,
+                                        name: value.name,
+                                        status: value.status,
+                                      },
+                                    }}
+                                  >
+                                    Chỉnh sửa
+                                  </Link>
+                                </td>
                               </tr>
                             );
                           })}
