@@ -8,6 +8,11 @@ import { ApiBaseURL } from "../ApiBaseURL";
 import { getToken } from "../HandleUser";
 
 function Posts() {
+  // const formatTime = (time) => {
+  //   const d = new Date(time);
+  //   const result = `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
+  //   return result;
+  // };
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const getPosts = () => {
