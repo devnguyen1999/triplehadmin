@@ -311,20 +311,25 @@ function EditPost() {
                                     var file = this.files[0];
                                     var reader = new FileReader();
                                     reader.onload = function (event) {
-                                      var id = "blobid" + new Date().getTime();
-                                      var blobCache =
-                                        window.tinymce.activeEditor.editorUpload
-                                          .blobCache;
-                                      var base64 = reader.result.split(",")[1];
-                                      var blobInfo = blobCache.create(
-                                        id,
-                                        file,
-                                        base64
-                                      );
-                                      blobCache.add(blobInfo);
-                                      callback(blobInfo.blobUri(), {
-                                        title: file.name,
-                                      });
+                                      let formData = new FormData();
+                                      formData.append("image", file);
+                                      axios({
+                                        method: "post",
+                                        url: ApiBaseURL("upload"),
+                                        headers: {
+                                          "Content-Type": "multipart/form-data",
+                                          token: getToken(),
+                                        },
+                                        data: formData,
+                                      })
+                                        .then((response) => {
+                                          callback(response.data.link, {
+                                            title: file.name,
+                                          });
+                                        })
+                                        .catch((error) => {
+                                          console.log(error);
+                                        });
                                     };
                                     reader.readAsDataURL(file);
                                   };
@@ -344,7 +349,9 @@ function EditPost() {
                             <input
                               type="submit"
                               className="btn btn-primary mr-3"
-                              value={loading ? "Loading..." : "Cập nhật bài viết"}
+                              value={
+                                loading ? "Loading..." : "Cập nhật bài viết"
+                              }
                               disabled={loading}
                             />
                             <Link
