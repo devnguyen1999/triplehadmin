@@ -15,7 +15,7 @@ function CreatePost() {
   const { handleSubmit, register, errors } = useForm();
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState(null);
-  var formData = new FormData();
+  let formData = new FormData();
   const { from } = { from: { pathname: "/bai-viet" } };
   const [redirect, setRedirect] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -51,8 +51,7 @@ function CreatePost() {
 
   const height = 500;
   const menubar = false;
-  const plugins =
-    "link image code table fullscreen hr lists";
+  const plugins = "link image code table fullscreen hr lists";
   const toolbar =
     "fontselect fontsizeselect formatselect | " +
     "bold italic underline strikethrough subscript superscript | " +
@@ -263,27 +262,46 @@ function CreatePost() {
                                   value,
                                   meta
                                 ) {
-                                  var input = document.createElement("input");
+                                  let input = document.createElement("input");
                                   input.setAttribute("type", "file");
                                   input.setAttribute("accept", "image/*");
                                   input.onchange = function () {
-                                    var file = this.files[0];
-                                    var reader = new FileReader();
+                                    let file = this.files[0];
+                                    let reader = new FileReader();
                                     reader.onload = function (event) {
-                                      var id = "blobid" + new Date().getTime();
-                                      var blobCache =
-                                        window.tinymce.activeEditor.editorUpload
-                                          .blobCache;
-                                      var base64 = reader.result.split(",")[1];
-                                      var blobInfo = blobCache.create(
-                                        id,
-                                        file,
-                                        base64
-                                      );
-                                      blobCache.add(blobInfo);
-                                      callback(blobInfo.blobUri(), {
-                                        title: file.name,
-                                      });
+                                      // let id = "blobid" + new Date().getTime();
+                                      // let blobCache =
+                                      //   window.tinymce.activeEditor.editorUpload
+                                      //     .blobCache;
+                                      // let base64 = reader.result.split(",")[1];
+                                      // let blobInfo = blobCache.create(
+                                      //   id,
+                                      //   file,
+                                      //   base64
+                                      // );
+                                      // blobCache.add(blobInfo);
+                                      // callback(blobInfo.blobUri(), {
+                                      //   title: file.name,
+                                      // });
+                                      let formData = new FormData();
+                                      formData.append("image", file);
+                                      axios({
+                                        method: "post",
+                                        url: ApiBaseURL("upload"),
+                                        headers: {
+                                          "Content-Type": "multipart/form-data",
+                                          token: getToken(),
+                                        },
+                                        data: formData,
+                                      })
+                                        .then((response) => {
+                                          callback(response.data.link, {
+                                            title: file.name,
+                                          });
+                                        })
+                                        .catch((error) => {
+                                          console.log(error);
+                                        });
                                     };
                                     reader.readAsDataURL(file);
                                   };

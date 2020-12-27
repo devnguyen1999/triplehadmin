@@ -11,10 +11,9 @@ function Categories() {
   const getCategories = () => {
     axios({
       method: "get",
-      url: ApiBaseURL("category/load"),
+      url: ApiBaseURL("category/loadcms"),
     })
       .then((response) => {
-        console.log(response.data.data);
         setCategories(response.data.data);
       })
       .catch((error) => {

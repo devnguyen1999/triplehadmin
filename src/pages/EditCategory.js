@@ -132,7 +132,7 @@ function EditCategory(props) {
                               type="radio"
                               defaultValue="available"
                               defaultChecked={
-                                (props.location.params.status === "available")
+                                props.location.params.status === "available"
                               }
                               name="status"
                               className="radio-template"
@@ -142,17 +142,17 @@ function EditCategory(props) {
                               Khả dụng
                             </label>
                             <input
-                              id="unavailable"
+                              id="blocked"
                               type="radio"
-                              defaultValue="unavailable"
+                              defaultValue="blocked"
                               defaultChecked={
-                                (props.location.params.status === "unavailable")
+                                props.location.params.status === "blocked"
                               }
                               name="status"
                               className="radio-template"
                               ref={register}
                             />
-                            <label htmlFor="unavailable">Không khả dụng</label>
+                            <label htmlFor="blocked">Bị khoá</label>
                           </div>
                         </div>
                         <div className="line" />
