@@ -6,21 +6,20 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { ApiBaseURL } from "../ApiBaseURL";
 import { getToken } from "../HandleUser";
+import Pagination from "react-js-pagination";
 
 function Posts() {
-  // const formatTime = (time) => {
-  //   const d = new Date(time);
-  //   const result = `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
-  //   return result;
-  // };
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const pageSize = 10;
   const getPosts = () => {
     axios({
       method: "get",
-      url: ApiBaseURL("post/load?page=1&pageSize=30"),
+      url: ApiBaseURL("post/load?page=" + page + "&pageSize=" + pageSize),
     })
       .then((response) => {
+        setTotal(response.data.total);
         setPosts(response.data.data);
       })
       .catch((error) => {
@@ -32,7 +31,7 @@ function Posts() {
     event.target.value = "Loading...";
     axios({
       method: "post",
-      url: "https://h3-blog.herokuapp.com/post/delete",
+      url: ApiBaseURL("post/delete"),
       headers: {
         token: getToken(),
       },
@@ -48,6 +47,17 @@ function Posts() {
         console.log(error.response);
         event.target.value = "Xoá";
       });
+  };
+  const handlePageChange = (pageNumber) => {
+    setPage(pageNumber);
+    axios({
+      method: "get",
+      url: ApiBaseURL("post/load?page=" + pageNumber + "&pageSize=" + pageSize),
+    })
+      .then((response) => {
+        setPosts(response.data.data);
+      })
+      .catch((error) => {});
   };
   useEffect(() => {
     getPosts();
@@ -97,9 +107,11 @@ function Posts() {
                             // console.log(value);
                             return (
                               <tr key={key}>
-                                <th scope="row">{key}</th>
+                                <th scope="row">
+                                  {(page - 1) * 10 + (key + 1)}
+                                </th>
                                 <td className="title">{value.title}</td>
-                                <td  className="image">
+                                <td className="image">
                                   <img
                                     src={value.img}
                                     alt={value.title}
@@ -108,29 +120,37 @@ function Posts() {
                                 </td>
                                 <td>{value.category}</td>
                                 <td className="actions">
-                                    <Link
-                                      type="button"
-                                      className="btn btn-warning w-100 mb-1"
-                                      to={
-                                        "/bai-viet/chinh-sua/" + value.nameUrl
-                                      }
-                                    >
-                                      Chỉnh sửa
-                                    </Link>
-                                    <input
-                                      type="button"
-                                      className="btn btn-danger w-100 mt-2"
-                                      onClick={(event) => {
-                                        deletePost(event, value.id);
-                                      }}
-                                      value="Xoá"
-                                    />
+                                  <Link
+                                    type="button"
+                                    className="btn btn-warning w-100 mb-1"
+                                    to={"/bai-viet/chinh-sua/" + value.nameUrl}
+                                  >
+                                    Chỉnh sửa
+                                  </Link>
+                                  <input
+                                    type="button"
+                                    className="btn btn-danger w-100 mt-2"
+                                    onClick={(event) => {
+                                      deletePost(event, value.id);
+                                    }}
+                                    value="Xoá"
+                                  />
                                 </td>
                               </tr>
                             );
                           })}
                         </tbody>
                       </table>
+                      <Pagination
+                        hideDisabled
+                        totalItemsCount={total}
+                        onChange={(pageNumber) => {
+                          handlePageChange(pageNumber);
+                        }}
+                        activePage={page}
+                        itemsCountPerPage={pageSize}
+                        pageRangeDisplayed={3}
+                      />
                     </div>
                     <div className="mt-5">
                       <Link

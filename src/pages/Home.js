@@ -13,12 +13,10 @@ function Home() {
     postNumber: 0,
   });
 
-  // Similar to componentDidMount and componentDidUpdate:
   useEffect(() => {
     axios
       .get(url)
       .then(function (response) {
-        // handle success
         console.log(response.data);
         setReport(response.data);
       })

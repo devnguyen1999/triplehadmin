@@ -37,6 +37,10 @@ function Sidebar() {
           to="/bai-viet"
           label={[<i key={3} className="icon-paper-and-pencil" />, "Bài viết"]}
         />
+        <CustomLink
+          to="/nguoi-dung"
+          label={[<i key={4} className="icon-user-1" />, "Người dùng"]}
+        />
       </ul>
     </nav>
   );
