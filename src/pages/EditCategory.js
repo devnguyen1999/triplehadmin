@@ -1,25 +1,43 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { ApiBaseURL } from "../ApiBaseURL";
+import { Redirect, Link, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
 import { getToken } from "../HandleUser";
-import { Redirect } from "react-router-dom";
-import { useForm, Controller } from "react-hook-form";
-import { ApiBaseURL } from "../ApiBaseURL";
-function EditCategory(props) {
-  const { handleSubmit, register, errors, control } = useForm();
+import { useForm } from "react-hook-form";
+import { useDropzone } from "react-dropzone";
+
+function EditCategory() {
+  let { slug } = useParams();
+  const [category, setCategory] = useState({});
+  const [status, setStatus] = useState(true);
+  const { handleSubmit, register, errors } = useForm();
   const [loading, setLoading] = useState(false);
   const { from } = { from: { pathname: "/the-loai" } };
   const [redirect, setRedirect] = useState(false);
   const errorMessage = (error) => {
     return <small className="error">{error}</small>;
   };
-  if (redirect) {
-    return <Redirect to={from} />;
-  }
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: ApiBaseURL("category/loadDetaiDetaiCategory?nameUrl=" + slug),
+    })
+      .then((response) => {
+        setCategory(response.data.data);
+        if(response.data.data.status === "available"){
+          setStatus(true);
+        }
+        if(response.data.data.status === "blocked"){
+          setStatus(false);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
   const onSubmit = (values) => {
     setLoading(true);
     axios({
@@ -29,7 +47,7 @@ function EditCategory(props) {
         token: getToken(),
       },
       data: {
-        id: props.location.params.id,
+        id: category._id,
         name: values.name,
         status: values.status,
       },
@@ -37,13 +55,16 @@ function EditCategory(props) {
       .then((response) => {
         setLoading(false);
         setRedirect(true);
-        console.log(response);
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error.response.data);
+        console.log(error);
       });
   };
+  if (redirect) {
+    return <Redirect to={from} />;
+  }
+  console.log(category.status);
   return (
     <div>
       <Header />
@@ -92,7 +113,7 @@ function EditCategory(props) {
                               className="form-control"
                               id="name"
                               name="name"
-                              defaultValue={props.location.params.name}
+                              defaultValue={category.name}
                               ref={register({
                                 required: "Tên thể loại không được để trống.",
                                 maxLength: {
@@ -131,9 +152,7 @@ function EditCategory(props) {
                               id="available"
                               type="radio"
                               defaultValue="available"
-                              defaultChecked={
-                                props.location.params.status === "available"
-                              }
+                              defaultChecked={status}
                               name="status"
                               className="radio-template"
                               ref={register}
@@ -145,9 +164,7 @@ function EditCategory(props) {
                               id="blocked"
                               type="radio"
                               defaultValue="blocked"
-                              defaultChecked={
-                                props.location.params.status === "blocked"
-                              }
+                              defaultChecked={!status}
                               name="status"
                               className="radio-template"
                               ref={register}
@@ -187,7 +204,5 @@ function EditCategory(props) {
     </div>
   );
 }
-
-EditCategory.propTypes = {};
 
 export default EditCategory;
