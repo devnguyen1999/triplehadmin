@@ -11,6 +11,7 @@ function Home() {
     userNumber: 0,
     views: 0,
     postNumber: 0,
+    adsViews: 0,
   });
 
   useEffect(() => {
@@ -94,9 +95,11 @@ function Home() {
                         <div className='icon'>
                           <i className='icon-paper-and-pencil' />
                         </div>
-                        <strong>New Invoices</strong>
+                        <strong>Ads views</strong>
                       </div>
-                      <div className='number dashtext-3'>140</div>
+                      <div className='number dashtext-3'>
+                        {report.adsViews || 0}
+                      </div>
                     </div>
                     <div className='progress progress-template'>
                       <div
