@@ -38,7 +38,6 @@ function CreatePost() {
     },
   });
   const thumbs = files.map((file) => {
-    console.log(file);
     return (
       <div key={file.name}>
         <img className="img-fluid mt-3" src={file.preview} />
@@ -68,7 +67,7 @@ function CreatePost() {
       url: ApiBaseURL("category/load"),
     })
       .then((response) => {
-        console.log(response.data.data);
+        // console.log(response.data.data);
         setCategories(response.data.data);
       })
       .catch((error) => {
@@ -79,11 +78,12 @@ function CreatePost() {
     getCategories();
   }, []);
   const onSubmit = (values) => {
+    // console.log(values.tags);
     setLoading(true);
     formData.append("title", values.title);
     formData.append("image", files[0]);
     formData.append("category", values.category);
-    formData.append("tags", values.category);
+    formData.append("tags", values.tags);
     formData.append("summary", values.summary);
     formData.append("content", content);
     axios({
@@ -96,7 +96,7 @@ function CreatePost() {
       data: formData,
     })
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setLoading(false);
         setRedirect(true);
       })
@@ -213,6 +213,22 @@ function CreatePost() {
                             </select>
                             {errors.category &&
                               errorMessage(errors.category.message)}
+                          </div>
+                        </div>
+                        <div className="line" />
+                        <div className="form-group row">
+                          <label className="col-sm-2 form-control-label">
+                            Tag
+                          </label>
+                          <div className="col-sm-10">
+                            <input
+                              type="text"
+                              placeholder="Nhập tag bài viết"
+                              className="form-control"
+                              id="tags"
+                              name="tags"
+                              ref={register({})}
+                            />
                           </div>
                         </div>
                         <div className="line" />

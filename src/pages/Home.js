@@ -17,7 +17,6 @@ function Home() {
     axios
       .get(url)
       .then(function (response) {
-        console.log(response.data);
         setReport(response.data);
       })
       .catch((errors) => {});

@@ -5,6 +5,7 @@ import { getToken, removeUserSession } from "../HandleUser";
 import { ApiBaseURL } from "../ApiBaseURL";
 
 function Header() {
+  
   const { from } = { from: { pathname: "/dang-nhap" } };
   const [redirect, setRedirect] = useState(false);
 
@@ -14,21 +15,8 @@ function Header() {
 
   const logout = (event) => {
     event.preventDefault();
-    axios({
-      method: "post",
-      url: ApiBaseURL("user/logout"),
-      data: {
-        token: getToken()
-      }
-    })
-      .then((response) => {
-        // console.log(response.data);
         removeUserSession();
         setRedirect(true);
-      })
-      .catch((error) => {
-        console.log(error.response);
-      });
   };
   return (
     <div>

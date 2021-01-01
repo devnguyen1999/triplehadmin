@@ -7,12 +7,11 @@ import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
 import { getToken } from "../HandleUser";
 import { useForm } from "react-hook-form";
-import { useDropzone } from "react-dropzone";
 
 function EditCategory() {
   let { slug } = useParams();
   const [category, setCategory] = useState({});
-  const [status, setStatus] = useState(true);
+  const [status, setStatus] = useState();
   const { handleSubmit, register, errors } = useForm();
   const [loading, setLoading] = useState(false);
   const { from } = { from: { pathname: "/the-loai" } };
@@ -64,7 +63,6 @@ function EditCategory() {
   if (redirect) {
     return <Redirect to={from} />;
   }
-  console.log(category.status);
   return (
     <div>
       <Header />
