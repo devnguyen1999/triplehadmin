@@ -10,6 +10,7 @@ import { getToken } from '../HandleUser';
 import { Redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useDropzone } from 'react-dropzone';
+import { compressImages } from '../helpers/CompressImages';
 
 function CreatePost() {
   const { handleSubmit, register, errors } = useForm();
@@ -27,9 +28,10 @@ function CreatePost() {
   const { getRootProps, getInputProps } = useDropzone({
     accept: 'image/*',
     maxFiles: 1,
-    onDrop: (acceptedFiles) => {
+    onDrop: async (acceptedFiles) => {
+      const images = await compressImages(acceptedFiles, {quality: 100});
       setFiles(
-        acceptedFiles.map((file) =>
+        images.map((file) =>
           Object.assign(file, {
             preview: URL.createObjectURL(file),
           })
@@ -79,6 +81,7 @@ function CreatePost() {
   }, []);
   const onSubmit = (values) => {
     // console.log(values.tags);
+
     setLoading(true);
     formData.append("title", values.title);
     formData.append("image", files[0]);
@@ -283,8 +286,9 @@ function CreatePost() {
                                   input.setAttribute('accept', 'image/*');
                                   input.onchange = function () {
                                     let file = this.files[0];
+                                    let filesArr = [file];
                                     let reader = new FileReader();
-                                    reader.onload = function (event) {
+                                    reader.onload = async function (event) {
                                       // let id = "blobid" + new Date().getTime();
                                       // let blobCache =
                                       //   window.tinymce.activeEditor.editorUpload
@@ -300,7 +304,8 @@ function CreatePost() {
                                       //   title: file.name,
                                       // });
                                       let formData = new FormData();
-                                      formData.append('image', file);
+                                      let images = await compressImages(filesArr, {quality: 100});
+                                      formData.append('image', images[0]);
                                       axios({
                                         method: 'post',
                                         url: ApiBaseURL('upload'),
