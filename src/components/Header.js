@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Redirect, Link } from "react-router-dom";
 import { getToken, removeUserSession } from "../HandleUser";
@@ -9,15 +9,26 @@ function Header() {
   const { from } = { from: { pathname: "/dang-nhap" } };
   const [redirect, setRedirect] = useState(false);
 
-  if (redirect) {
-    return <Redirect to={from} />;
-  }
-
   const logout = (event) => {
     event.preventDefault();
         removeUserSession();
         setRedirect(true);
   };
+  useEffect(() => {
+    const script = document.createElement("script");
+
+    script.src = "../assets/js/front.js";
+    script.async = true;
+
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+  if (redirect) {
+    return <Redirect to={from} />;
+  }
   return (
     <div>
       <header className="header">
